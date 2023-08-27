@@ -22,10 +22,13 @@ class ShellMGW(base.ShellMultimode):
     async def login(self):
         self.writer.write(b"admin\n")
 
-        coro = self.reader.readuntil(b"\r\n# ")
+        coro = self.reader.readuntil(b" ")
         raw = await asyncio.wait_for(coro, timeout=3)
-        if b"Password:" in raw:
-            raise Exception("Telnet with password don't supported")
+        if self.password and b"Password:" in raw:
+            self.writer.write(bytes(self.password + "\n", "ascii"))
+
+        coro = self.reader.readuntil(b"\r\n# ")
+        await asyncio.wait_for(coro, timeout=3)
 
     async def prepare(self):
         await self.exec("stty -echo")

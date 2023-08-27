@@ -22,9 +22,11 @@ class Session:
 
     reader: asyncio.StreamReader
     writer: asyncio.StreamWriter
+    password: str
 
-    def __init__(self, host: str, port=23):
+    def __init__(self, host: str, port=23, password: str = None):
         self.coro = asyncio.open_connection(host, port, limit=1_000_000)
+        self.password = password
 
     async def __aenter__(self):
         await self.connect()
@@ -45,11 +47,11 @@ class Session:
         resp: bytes = await asyncio.wait_for(coro, 3)
 
         if b"rlxlinux" in resp:
-            shell = ShellMGW(self.reader, self.writer)
+            shell = ShellMGW(self.reader, self.writer, self.password)
         elif b"Aqara-Hub-E1" in resp:
-            shell = ShellE1(self.reader, self.writer)
+            shell = ShellE1(self.reader, self.writer, self.password)
         elif b"Mijia_Hub_V2" in resp:
-            shell = ShellMGW2(self.reader, self.writer)
+            shell = ShellMGW2(self.reader, self.writer, self.password)
         else:
             raise Exception(f"Unknown response: {resp}")
 

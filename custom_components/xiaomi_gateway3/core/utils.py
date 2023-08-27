@@ -172,20 +172,20 @@ async def enable_telnet(miio: AsyncMiIO, key: str = None) -> dict:
             method = "set_ip_info"
             params = {
                 "ssid": '""',
-                "pswd": "1; passwd -d $USER; echo enable > /sys/class/tty/tty/enable; telnetd",
+                "pswd": "1; echo enable > /sys/class/tty/tty/enable; telnetd",
             }
         elif key:
             method = "system_command"
             params = {
                 "password": miio_password(miio.device_id, miio_info["mac"], key),
-                "command": "passwd -d $USER; echo enable > /sys/class/tty/tty/enable; telnetd",
+                "command": "echo enable > /sys/class/tty/tty/enable; telnetd",
             }
     else:
         # some universal cmd for all gateways
         method = "set_ip_info"
         params = {
             "ssid": '""',
-            "pswd": "1; passwd -d $USER; riu_w 101e 53 3012 || echo enable > /sys/class/tty/tty/enable; telnetd",
+            "pswd": "1; riu_w 101e 53 3012 || echo enable > /sys/class/tty/tty/enable; telnetd",
         }
 
     if method:
@@ -196,14 +196,19 @@ async def enable_telnet(miio: AsyncMiIO, key: str = None) -> dict:
     return miio_info
 
 
-async def gateway_info(host: str, token: str = None, key: str = None) -> Optional[dict]:
+async def gateway_info(
+    host: str,
+    token: str = None,
+    key: str = None,
+    telnet_password: str = None,
+) -> Optional[dict]:
     # Strategy:
     # 1. Check open telnet and return host, did, token, key
     # 2. Try to enable telnet using host, token and (optionaly) key
     # 3. Check open telnet again
     # 4. Return error
     try:
-        async with shell.Session(host) as sh:
+        async with shell.Session(host=host, password=telnet_password) as sh:
             if sh.model:
                 info = await sh.get_miio_info()
                 return {"host": host, **info}

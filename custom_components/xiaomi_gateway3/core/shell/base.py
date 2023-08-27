@@ -25,6 +25,7 @@ OPENMIIO_URL_ARM = OPENMIIO_BASE + "openmiio_agent_arm"
 class TelnetShell:
     reader: StreamReader
     writer: StreamWriter
+    password: str = None
     model = None
     ver = None
 

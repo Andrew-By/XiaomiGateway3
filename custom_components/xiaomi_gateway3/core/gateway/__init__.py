@@ -43,6 +43,7 @@ class XGateway(GateMGW, GateE1, GateMGW2):
         self.log = _LOGGER
 
         self.host = host
+        self.telnet_password = options.get("telnet_password")
         self.options = options
 
         self.dispatcher = {}
@@ -176,7 +177,9 @@ class XGateway(GateMGW, GateE1, GateMGW2):
         running.
         """
         try:
-            async with shell.Session(self.host) as sh:
+            async with shell.Session(
+                host=self.host, password=self.telnet_password
+            ) as sh:
                 if not await sh.only_one():
                     self.debug("Connection from a second Hass detected")
                     return False
@@ -204,7 +207,9 @@ class XGateway(GateMGW, GateE1, GateMGW2):
 
     async def telnet_send(self, command: str):
         try:
-            async with shell.Session(self.host) as sh:
+            async with shell.Session(
+                host=self.host, password=self.telnet_password
+            ) as sh:
                 if command == "ftp":
                     await sh.run_ftp()
                 elif command == "tardata":
@@ -225,7 +230,9 @@ class XGateway(GateMGW, GateE1, GateMGW2):
 
     async def tar_data(self) -> str:
         try:
-            async with shell.Session(self.host) as sh:
+            async with shell.Session(
+                host=self.host, password=self.telnet_password
+            ) as sh:
                 return await sh.tar_data()
         except Exception as e:
             return f"{type(e).__name__} {e}"

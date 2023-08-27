@@ -36,6 +36,7 @@ class GatewayBase:
     log: Logger = None
 
     host: str = None
+    telnet_password: str = None
     options: dict = None
     available: bool = None
 
