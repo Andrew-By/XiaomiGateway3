@@ -63,7 +63,9 @@ class OpenmiioGateway(GatewayBase):
         self.device.update(payload)
 
         try:
-            async with shell.Session(self.host) as sh:
+            async with shell.Session(
+                host=self.host, password=self.telnet_password
+            ) as sh:
                 if not await sh.only_one():
                     self.debug("Connection from a second Hass detected")
                     return

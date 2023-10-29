@@ -52,7 +52,9 @@ class GateMGW(
 
     async def gw3_send_lock(self, enable: bool) -> bool:
         try:
-            async with shell.Session(self.host) as sh:
+            async with shell.Session(
+                host=self.host, password=self.telnet_password
+            ) as sh:
                 await sh.lock_firmware(enable)
                 locked = await sh.check_firmware_lock()
                 return enable == locked
@@ -62,7 +64,9 @@ class GateMGW(
 
     async def gw3_read_lock(self) -> Optional[bool]:
         try:
-            async with shell.Session(self.host) as sh:
+            async with shell.Session(
+                host=self.host, password=self.telnet_password
+            ) as sh:
                 return await sh.check_firmware_lock()
         except Exception as e:
             self.error(f"Can't get firmware lock", e)

@@ -121,7 +121,9 @@ class SilabsGateway(GatewayBase):
 
     async def silabs_prevent_unpair(self):
         try:
-            async with shell.Session(self.host) as sh:
+            async with shell.Session(
+                host=self.host, password=self.telnet_password
+            ) as sh:
                 await sh.prevent_unpair()
         except Exception as e:
             self.error("Can't prevent unpair", e)
