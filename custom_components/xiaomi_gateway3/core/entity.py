@@ -7,7 +7,6 @@ from homeassistant.components.binary_sensor import BinarySensorDeviceClass
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.config import DATA_CUSTOMIZE
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import *
 from homeassistant.core import callback, State, HomeAssistant
 from homeassistant.helpers import device_registry
 from homeassistant.helpers.device_registry import (
@@ -39,6 +38,7 @@ DEVICE_CLASSES = {
     "reverse": BinarySensorDeviceClass.LOCK,
     "square": BinarySensorDeviceClass.LOCK,
     "water_leak": BinarySensorDeviceClass.MOISTURE,
+    "realtime_current_in": SensorDeviceClass.CURRENT,
 }
 
 ICONS = {
@@ -129,6 +129,12 @@ ENTITY_CATEGORIES = {
     "turn_off_transit_sec": EntityCategory.CONFIG,
     "change_transit_sec": EntityCategory.CONFIG,
     "min_brightness": EntityCategory.CONFIG,
+    # Linptech Mesh Triple Wall Switch (no N)
+    "compatible_mode": EntityCategory.CONFIG,
+    # Linptech Sliding Window Driver WD1
+    "security_mode": EntityCategory.CONFIG,
+    "power_replenishment": EntityCategory.DIAGNOSTIC,
+    "realtime_current_in": EntityCategory.DIAGNOSTIC,
 }
 
 STATE_TIMEOUT = timedelta(minutes=10)

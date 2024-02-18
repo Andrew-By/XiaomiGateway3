@@ -274,7 +274,10 @@ class MiBeaconConv(Converter):
             payload["opening"] = bool(data[0] == 0)
 
         elif eid == 0x1010 and len(data) == 2:  # 4112
-            payload["formaldehyde"] = int.from_bytes(data, "little") / 100.0
+            if device.model == 1809:
+                payload["formaldehyde"] = int.from_bytes(data, "little") / 1000.0
+            else:
+                payload["formaldehyde"] = int.from_bytes(data, "little") / 100.0
 
         elif eid == 0x1012 and len(data) == 1:  # 4114
             # hass: On means open, Off means closed
@@ -543,7 +546,50 @@ class MiBeaconConv(Converter):
             if error_id not in BLE_SPEC_LOCK_ERROR:
                 return
             payload["error"] = BLE_SPEC_LOCK_ERROR[error_id]
-
+        elif eid == 0x560C:  # 22028
+            # wireless button KS1PBB
+            if device.model == 15895:
+                value = int.from_bytes(data, "little")
+                if value == 1:
+                    payload.update({"action": "button_1_single"})
+                if value == 2:
+                    payload.update({"action": "button_2_single"})
+                if value == 3:
+                    payload.update({"action": "button_3_single"})
+                if value == 4:
+                    payload.update({"action": "button_4_single"})
+        elif eid == 0x560D:  # 22029
+            # wireless button KS1PBB
+            if device.model == 15895:
+                value = int.from_bytes(data, "little")
+                if value == 1:
+                    payload.update({"action": "button_1_double"})
+                if value == 2:
+                    payload.update({"action": "button_2_double"})
+                if value == 3:
+                    payload.update({"action": "button_3_double"})
+                if value == 4:
+                    payload.update({"action": "button_4_double"})
+        elif eid == 0x560E:  # 22030
+            # wireless button KS1PBB
+            if device.model == 15895:
+                value = int.from_bytes(data, "little")
+                if value == 1:
+                    payload.update({"action": "button_1_hold"})
+                if value == 2:
+                    payload.update({"action": "button_2_hold"})
+                if value == 3:
+                    payload.update({"action": "button_3_hold"})
+                if value == 4:
+                    payload.update({"action": "button_4_hold"})
+        elif eid == 0x4801:  # 18433
+            # wireless button KS1PBB
+            if device.model == 15895:
+                payload["temperature"] = round(struct.unpack("<f", data)[0], 2)
+        elif eid == 0x4808:  # 18440
+            # wireless button KS1PBB
+            if device.model == 15895:
+                payload["humidity"] = round(struct.unpack("<f", data)[0], 2)
 
 MiBeacon = MiBeaconConv("mibeacon")
 
